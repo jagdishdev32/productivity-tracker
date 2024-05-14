@@ -6,6 +6,7 @@ const analyzeProductivity = (log) => {
     .filter((entry) => entry.type.startsWith("Break"))
     .reduce((acc, entry) => acc + entry.duration, 0);
   console.log(`Productivity Analysis:`);
+  console.log(`Total Task Time: ${totalTaskTime / 60} minutes`);
   console.log(`Total Task Time: ${totalTaskTime / 3600} hours`);
   console.log(`Total Break Time: ${totalBreakTime / 60} minutes`);
 };

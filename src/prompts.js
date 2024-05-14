@@ -18,6 +18,16 @@ const promptPassphrase = (callback) => {
   });
 };
 
+const promptPomodoro = (callback) => {
+  rl.question("Start Pomodoro session? (Y/N): ", (answer) => {
+    if (answer.toUpperCase() === "Y") {
+      callback();
+    } else {
+      console.log("Pomodoro session canceled.");
+    }
+  });
+};
+
 // const promptPassphrase = (callback) => {
 //   const passphrase = readlineSync.question("Enter passphrase: ", {
 //     hideEchoBack: true,
@@ -25,4 +35,4 @@ const promptPassphrase = (callback) => {
 //   callback(passphrase);
 // };
 
-module.exports = { promptDescription, promptPassphrase, rl };
+module.exports = { promptDescription, promptPassphrase, promptPomodoro, rl };

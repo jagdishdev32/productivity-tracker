@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 
-const { promptDescription, promptPassphrase, rl } = require("./prompts");
-const { startBreakTimer } = require("./utils/timer"); // Importing startBreakTimer function
+const {
+  promptDescription,
+  promptPassphrase,
+  promptPomodoro,
+  rl,
+} = require("./prompts");
+const { startBreakTimer } = require("./utils/timer");
 const { saveLog, loadLog } = require("./utils/fileHandler");
 const { analyzeProductivity } = require("./productivity");
 const { v4: uuidv4 } = require("uuid");
+const { startPomodoroSession } = require("./utils/pomodoro");
 
 const config = require("../config/config.json");
 
@@ -14,6 +20,7 @@ let currentSession = {
   taskStart: null,
   breakStart: null,
 };
+
 let breakTimer; // Defining breakTimer here
 
 const getCurrentTime = () => new Date().toISOString();
@@ -29,7 +36,7 @@ const handleTaskInput = (description) => {
       type: "Break",
       start: currentSession.breakStart,
       end: breakEnd,
-      duration: calculateDuration(currentSession.breakStart, breakEnd),
+      duration: calculateDuration(currentSession.breakStart, breakEnd), // Add duration property
       description: description || "No description",
     });
     console.log("Break ended. Task resumed.");
@@ -44,7 +51,7 @@ const handleTaskInput = (description) => {
     description: description || "No description",
   });
   promptPassphrase((passphrase) => saveLog(log, passphrase));
-  breakTimer = startBreakTimer(config.breakInterval); // Assigning startBreakTimer to breakTimer
+  startBreakTimer(config.breakInterval);
 };
 
 const handleBreakInput = (description) => {
@@ -56,7 +63,7 @@ const handleBreakInput = (description) => {
       type: "Task",
       start: currentSession.taskStart,
       end: taskEnd,
-      duration: calculateDuration(currentSession.taskStart, taskEnd),
+      duration: calculateDuration(currentSession.taskStart, taskEnd), // Add duration property
       description: description || "No description",
     });
     console.log("Task ended. Break started.");
@@ -71,8 +78,7 @@ const handleBreakInput = (description) => {
     description: description || "No description",
   });
   promptPassphrase((passphrase) => saveLog(log, passphrase));
-  if (breakTimer) clearTimeout(breakTimer);
-  breakTimer = startBreakTimer(config.breakInterval); // Assigning startBreakTimer to breakTimer
+  startBreakTimer(config.breakInterval);
 };
 
 rl.on("line", (input) => {
@@ -81,6 +87,9 @@ rl.on("line", (input) => {
     promptDescription(handleTaskInput);
   } else if (command === "B") {
     promptDescription(handleBreakInput);
+  } else if (command === "P") {
+    // Adding Pomodoro prompt
+    promptPomodoro(() => startPomodoroSession(config));
   } else if (command === "SUMMARY") {
     console.log("Summary Report:");
     const summary = log.reduce((acc, entry) => {
@@ -94,7 +103,7 @@ rl.on("line", (input) => {
     analyzeProductivity(log);
   } else {
     console.log(
-      'Invalid input. Press "T" for task, "B" for break, "SUMMARY" for a summary report, or "ANALYZE" for productivity analysis.'
+      'Invalid input. Press "T" for task, "B" for break, "P" for Pomodoro session, "SUMMARY" for a summary report, or "ANALYZE" for productivity analysis.'
     );
   }
 });
