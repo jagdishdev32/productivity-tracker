@@ -88,7 +88,6 @@ rl.on("line", (input) => {
   } else if (command === "B") {
     promptDescription(handleBreakInput);
   } else if (command === "P") {
-    // Adding Pomodoro prompt
     promptPomodoro(() => startPomodoroSession(config));
   } else if (command === "SUMMARY") {
     console.log("Summary Report:");
@@ -101,9 +100,15 @@ rl.on("line", (input) => {
     console.log(`Total Break Time: ${summary.Break || 0} seconds`);
   } else if (command === "ANALYZE") {
     analyzeProductivity(log);
+  } else if (command === "Q") {
+    console.log("Quitting the program.");
+    console.log("All Tasks and Breaks:");
+    console.log(log); // Display all tasks and breaks
+    rl.close();
+    process.exit(0);
   } else {
     console.log(
-      'Invalid input. Press "T" for task, "B" for break, "P" for Pomodoro session, "SUMMARY" for a summary report, or "ANALYZE" for productivity analysis.'
+      'Invalid input. Press "T" for task, "B" for break, "P" for Pomodoro session, "SUMMARY" for a summary report, "ANALYZE" for productivity analysis, or "Q" to quit.'
     );
   }
 });
