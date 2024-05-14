@@ -1,0 +1,5 @@
+{
+  "breakInterval": 3600,
+  "taskLimit": 7200,
+  "breakLimit": 900
+}
