@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "bin": {
-    "task-timer": "./index.js"
+    "task-timer": "./index.js",
+    "tt": "./src/main.js"
   },
   "scripts": {
     "start": "node src/main.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "JB",
+  "license": "MIT",
   "dependencies": {
     "crypto": "^1.0.1",
     "fs": "^0.0.1-security",
