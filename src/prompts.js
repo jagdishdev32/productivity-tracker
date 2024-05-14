@@ -1,5 +1,5 @@
 const readline = require("readline");
-const readlineSync = require("readline-sync");
+const getpass = require("getpass");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -13,10 +13,20 @@ const promptDescription = (callback) => {
 };
 
 const promptPassphrase = (callback) => {
-  rl.question("Enter passphrase: ", (passphrase) => {
+  getpass.getPass(["Enter passphrase: "], (err, passphrase) => {
+    if (err) {
+      console.error("Error:", err.message);
+      return;
+    }
     callback(passphrase);
   });
 };
+
+// const promptPassphrase = (callback) => {
+//   rl.question("Enter passphrase: ", (passphrase) => {
+//     callback(passphrase);
+//   });
+// };
 
 const promptPomodoro = (callback) => {
   rl.question("Start Pomodoro session? (Y/N): ", (answer) => {
