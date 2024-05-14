@@ -17,6 +17,7 @@ const config = require("../config/config.json");
 let log = [];
 let currentSession = {
   sessionId: uuidv4(),
+  //   sessionId: Date.now(),
   taskStart: null,
   breakStart: null,
 };
@@ -36,14 +37,25 @@ const handleTaskInput = (description) => {
       type: "Break",
       start: currentSession.breakStart,
       end: breakEnd,
-      duration: calculateDuration(currentSession.breakStart, breakEnd), // Add duration property
-      description: description || "No description",
+      duration: calculateDuration(currentSession.breakStart, breakEnd),
+      description: description || "Break ended due to new task",
     });
     console.log("Break ended. Task resumed.");
     currentSession.breakStart = null;
   }
+  if (currentSession.taskStart) {
+    const taskEnd = currentTime;
+    log.push({
+      sessionId: currentSession.sessionId,
+      type: "Task",
+      start: currentSession.taskStart,
+      end: taskEnd,
+      duration: calculateDuration(currentSession.taskStart, taskEnd),
+      description: description || "No description",
+    });
+    console.log("Previous task ended. New task started.");
+  }
   currentSession.taskStart = currentTime;
-  console.log("Task time logged.");
   log.push({
     sessionId: currentSession.sessionId,
     type: "Task",
@@ -63,22 +75,32 @@ const handleBreakInput = (description) => {
       type: "Task",
       start: currentSession.taskStart,
       end: taskEnd,
-      duration: calculateDuration(currentSession.taskStart, taskEnd), // Add duration property
-      description: description || "No description",
+      duration: calculateDuration(currentSession.taskStart, taskEnd),
+      description: description || "Task ended due to new break",
     });
     console.log("Task ended. Break started.");
     currentSession.taskStart = null;
   }
+  if (currentSession.breakStart) {
+    const breakEnd = currentTime;
+    log.push({
+      sessionId: currentSession.sessionId,
+      type: "Break",
+      start: currentSession.breakStart,
+      end: breakEnd,
+      duration: calculateDuration(currentSession.breakStart, breakEnd),
+      description: description || "No description",
+    });
+    console.log("Previous break ended. New break started.");
+  }
   currentSession.breakStart = currentTime;
-  console.log("Break time logged.");
   log.push({
     sessionId: currentSession.sessionId,
-    type: "BreakStart",
+    type: "Break",
     start: currentSession.breakStart,
     description: description || "No description",
   });
   promptPassphrase((passphrase) => saveLog(log, passphrase));
-  startBreakTimer(config.breakInterval);
 };
 
 const displayLogs = () => {
@@ -88,8 +110,9 @@ const displayLogs = () => {
     console.log(`Entry ${index + 1}:`);
     console.log(`Type: ${entry.type}`);
     console.log(`Description: ${entry.description || "No description"}`);
-    console.log(`Duration: ${entry.duration || "Not available"}`);
-    console.log(`Timestamp: ${entry.timestamp}`);
+    console.log(`Duration: ${entry.duration || "Not available"} seconds`);
+    console.log(`Start: ${entry.start}`);
+    console.log(`End: ${entry.end || "Ongoing"}`);
     console.log("----------------------");
   });
 };
@@ -114,6 +137,31 @@ rl.on("line", (input) => {
   } else if (command === "ANALYZE") {
     analyzeProductivity(log);
   } else if (command === "Q") {
+    const currentTime = getCurrentTime();
+    if (currentSession.taskStart) {
+      const taskEnd = currentTime;
+      log.push({
+        sessionId: currentSession.sessionId,
+        type: "Task",
+        start: currentSession.taskStart,
+        end: taskEnd,
+        duration: calculateDuration(currentSession.taskStart, taskEnd),
+        description: "Task ended due to quitting",
+      });
+      currentSession.taskStart = null;
+    }
+    if (currentSession.breakStart) {
+      const breakEnd = currentTime;
+      log.push({
+        sessionId: currentSession.sessionId,
+        type: "Break",
+        start: currentSession.breakStart,
+        end: breakEnd,
+        duration: calculateDuration(currentSession.breakStart, breakEnd),
+        description: "Break ended due to quitting",
+      });
+      currentSession.breakStart = null;
+    }
     console.log("Quitting the program.");
     displayLogs();
     rl.close();
