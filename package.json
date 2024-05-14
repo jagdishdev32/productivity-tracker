@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "bin": {
-    "task-timer": "./index.js",
-    "tt": "./src/main.js"
+    "time-tracker": "./src/main.js",
+    "tt": "./src/main.js",
+    "productivity-tracker": "./src/main.js",
+    "pt": "./src/main.js"
   },
   "scripts": {
     "start": "node src/main.js"
