@@ -81,6 +81,19 @@ const handleBreakInput = (description) => {
   startBreakTimer(config.breakInterval);
 };
 
+const displayLogs = () => {
+  console.log("All Tasks and Breaks:");
+  console.log("----------------------");
+  log.forEach((entry, index) => {
+    console.log(`Entry ${index + 1}:`);
+    console.log(`Type: ${entry.type}`);
+    console.log(`Description: ${entry.description || "No description"}`);
+    console.log(`Duration: ${entry.duration || "Not available"}`);
+    console.log(`Timestamp: ${entry.timestamp}`);
+    console.log("----------------------");
+  });
+};
+
 rl.on("line", (input) => {
   const command = input.trim().toUpperCase();
   if (command === "T") {
@@ -102,8 +115,7 @@ rl.on("line", (input) => {
     analyzeProductivity(log);
   } else if (command === "Q") {
     console.log("Quitting the program.");
-    console.log("All Tasks and Breaks:");
-    console.log(log); // Display all tasks and breaks
+    displayLogs();
     rl.close();
     process.exit(0);
   } else {
