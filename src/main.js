@@ -13,6 +13,7 @@ const { v4: uuidv4 } = require("uuid");
 const { startPomodoroSession } = require("./utils/pomodoro");
 
 const config = require("../config/config.json");
+const { fromLogsGetHourlySummary } = require("./utils/utils");
 
 let log = [];
 let currentSession = {
@@ -134,6 +135,9 @@ rl.on("line", (input) => {
     }, {});
     console.log(`Total Task Time: ${summary.Task || 0} seconds`);
     console.log(`Total Break Time: ${summary.Break || 0} seconds`);
+  } else if (command == "LOGS") {
+    // console.log("logs: ", log);
+    fromLogsGetHourlySummary(log);
   } else if (command === "ANALYZE") {
     analyzeProductivity(log);
   } else if (command === "Q") {
